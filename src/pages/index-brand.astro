@@ -1,0 +1,20 @@
+---
+import NavBrand from "../components/NavBrand.astro";
+const title = 'Brand Nav — Astro + Tailwind (CDN)';
+const description = 'Nav with left-aligned 50x50 brand image anchor.';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-white text-gray-800">
+    <NavBrand />
+  </body>
+</html>
+
+
