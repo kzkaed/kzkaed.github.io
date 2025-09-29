@@ -3,5 +3,12 @@ node_modules/
 .dist/
 .astro/
 .DS_Store
+
 # Build output
 /dist/
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
