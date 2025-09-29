@@ -21,8 +21,15 @@ Site URL: https://kzkaed.github.io
 
 ## Project structure
 - `src/pages/` — routes. Edit `index.astro` to change the home page.
+- `public/styles/` — centralized CSS served at `/styles/*` (e.g., `/styles/global.css`).
+- `assets/` — images and other static assets referenced by pages (e.g., `/assets/drop.png`).
 - `plans.md` — kept in the repo root; the site links to it from `/plans` for now.
 - `astro.config.mjs` — site configuration.
+
+## Styling approach
+- Global, framework-agnostic styles live in `public/styles/global.css` and are linked from pages that use basic HTML (e.g., `index.astro`).
+- Tailwind demo pages load Tailwind via CDN and avoid the global CSS to prevent conflicts; they rely on utility classes for styling.
+- Rationale: separate presentation from markup and provide a single place to manage tokens (colors, spacing, typography) and common components.
 
 ## Notes
 - The `/plans` page currently links to the repository version of `plans.md` to keep things simple. We can render the Markdown in-site later using Astro content collections.

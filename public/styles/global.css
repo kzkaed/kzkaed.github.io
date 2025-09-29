@@ -1,0 +1,56 @@
+/* Global site styles
+   Centralized stylesheet to separate presentation from markup and provide
+   a single place to evolve your design system. Keep this file small and
+   framework‑agnostic. Tailwind pages can omit this if they rely solely on utilities.
+*/
+
+:root {
+  --fg: #1f2937;   /* gray-800 */
+  --muted: #6b7280; /* gray-500 */
+  --link: #2563eb; /* blue-600 */
+}
+
+/* Base typography and layout */
+html { color-scheme: light; }
+body {
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  margin: 2rem auto;
+  max-width: 70ch;
+  line-height: 1.6;
+  color: var(--fg);
+  padding: 0 1rem;
+  background: #fff;
+}
+
+h1 { line-height: 1.2; margin-bottom: 0.25rem; }
+h2 { margin-top: 1.5rem; }
+
+/* Links */
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Navigation */
+nav a { margin-right: 1rem; }
+
+/* Lists and small helpers */
+ul { padding-left: 1rem; }
+li { margin: 0.35rem 0; }
+small { color: var(--muted); }
+
+/* Footer */
+footer { margin-top: 3rem; color: var(--muted); font-size: 0.9rem; }
+
+/* Demo helpers used on the homepage */
+.demo-list { margin-top: 1.25rem; }
+.demo-list a {
+  display: inline-block;
+  margin-right: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 0.375rem; /* rounded-md */
+}
+.demo-list a:hover { background: #f9fafb; text-decoration: none; }
+
+/* Informational callouts */
+.note { background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.75rem; border-radius: 0.5rem; }

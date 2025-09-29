@@ -1,0 +1,60 @@
+---
+const title = 'Left-aligned Hero — Astro + Tailwind (CDN)';
+const description = 'Left-aligned hero with text and image using /assets/drop.png';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-white text-gray-800">
+    <header class="mx-auto max-w-7xl px-6 py-6">
+      <nav class="flex items-center justify-between">
+        <a href="/" class="text-lg font-semibold hover:opacity-80">Home</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="mx-auto max-w-7xl px-6 py-16 sm:py-24">
+        <div class="grid grid-cols-1 items-center gap-10 sm:grid-cols-2">
+          <div>
+            <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Hero with Left-aligned Text</h1>
+            <p class="mt-4 text-lg text-gray-600">Use this layout when you want copy and CTAs to lead with supporting imagery.</p>
+            <div class="mt-8 flex items-center gap-4">
+              <a href="#" class="inline-flex items-center rounded-md bg-blue-600 px-5 py-3 text-white font-medium shadow hover:bg-blue-700">Primary CTA</a>
+              <a href="#" class="inline-flex items-center rounded-md border border-gray-300 px-5 py-3 text-gray-700 font-medium hover:bg-gray-50">Learn more</a>
+            </div>
+          </div>
+          <div class="relative">
+            <img src="/assets/drop.png" alt="Hero" class="w-[100px] h-auto object-contain rounded-md shadow" />
+          </div>
+        </div>
+      </section>
+
+      <section class="border-t border-gray-100">
+        <div class="mx-auto max-w-7xl px-6 py-12 grid grid-cols-1 gap-8 sm:grid-cols-3">
+          <div>
+            <h3 class="font-semibold">Bullet 1</h3>
+            <p class="mt-2 text-sm text-gray-600">Short supporting text as placeholder.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold">Bullet 2</h3>
+            <p class="mt-2 text-sm text-gray-600">Another small point of value.</p>
+          </div>
+          <div>
+            <h3 class="font-semibold">Bullet 3</h3>
+            <p class="mt-2 text-sm text-gray-600">Add more details here as needed.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mx-auto max-w-7xl px-6 py-10 text-sm text-gray-500">
+      <p>Left-aligned hero layout demo. Built with Astro + Tailwind (CDN).</p>
+    </footer>
+  </body>
+</html>
