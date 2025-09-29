@@ -1,0 +1,36 @@
+---
+import fs from 'node:fs';
+import path from 'node:path';
+
+// We link to the repository plans.md instead of inlining its content to keep things simple.
+const repoPlansUrl = 'https://github.com/kzkaed/kzkaed.github.io/blob/main/plans.md';
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Plans</title>
+    <style>
+      :root { --fg: #1f2937; --muted: #6b7280; --link: #2563eb; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 2rem auto; max-width: 60ch; line-height: 1.6; color: var(--fg); padding: 0 1rem; }
+      nav a { margin-right: 1rem; }
+      a { color: var(--link); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Plans</h1>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/plans">Plans</a>
+        <a href="https://github.com/kzkaed/kzkaed.github.io">Repo</a>
+      </nav>
+    </header>
+    <main>
+      <p>For now, view and maintain the plan directly in the repository:</p>
+      <p><a href={repoPlansUrl}>{repoPlansUrl}</a></p>
+      <p>This page can later render the Markdown using Astro content collections if desired.</p>
+    </main>
+  </body>
+</html>
