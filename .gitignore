@@ -1,14 +1,14 @@
-# Node / Astro
-node_modules/
-.dist/
-.astro/
+public/
+.hugo_build.lock
+CLAUDE.md
 .DS_Store
+tmp/
+*.tmp
 
-# Build output
-/dist/
-
-# IDEs and editors
+# Editor workspace files
+*.code-workspace
+.vscode/
 .idea/
+.project
+.settings/
 *.iml
-*.ipr
-*.iws

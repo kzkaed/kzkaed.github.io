@@ -1,0 +1,45 @@
+baseURL = 'https://kzkaed.github.io/'
+languageCode = 'en-us'
+title = 'substrate'
+theme = 'PaperMod'
+enableRobotsTXT = true
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[params]
+  description = "The work and the work under the work"
+  env = "production"
+  author = "substrate"
+
+  # Post features
+  ShowReadingTime = true
+  ShowWordCount = true
+  ShowPostNavLinks = true
+  ShowBreadCrumbs = true
+  ShowCodeCopyButtons = true
+  ShowShareButtons = true
+  ShowToc = true
+  TocOpen = false
+
+  # SEO
+  ShowRssButtonInSectionTermList = true
+  canonicalURL = "https://kzkaed.github.io/"
+
+  # Performance
+  assets.disableHLJS = true
+
+[[menus.main]]
+  name = "Archive"
+  url = "/archives/"
+  weight = 10
+
+[[menus.main]]
+  name = "Tags"
+  url = "/tags/"
+  weight = 20
+
+[[menus.main]]
+  name = "Search"
+  url = "/search/"
+  weight = 30
