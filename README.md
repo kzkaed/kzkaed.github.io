@@ -1,4 +1,4 @@
-# substrate
+# topology.work
 
 A commentary built with Hugo, deployed to GitHub Pages.
 
@@ -16,9 +16,9 @@ A commentary built with Hugo, deployed to GitHub Pages.
 ## Set up
 
 ```
-$ git clone git@github.com:kzkaed/substrate.git
+$ git clone git@github.com:kzkaed/kzkaed.github.io.git
 
-$ cd substrate
+$ cd kzkaed.github.io
 
 $ git submodule update --init --recursive
 

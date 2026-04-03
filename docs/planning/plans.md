@@ -3,7 +3,7 @@
 Last updated: 2025-09-29 07:00 (local time)
 
 ## Objectives
-- Maintain and evolve kzkaed.github.io as a lightweight, fast, and readable personal site.
+- Maintain and evolve topology.work as a lightweight, fast, and readable personal site.
 - Capture decisions and rationale using ADRs in docs/adr.
 - Publish incremental improvements with minimal process overhead.
 
