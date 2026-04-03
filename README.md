@@ -1,12 +1,13 @@
 # topology.work
 
-A commentary built with Hugo, deployed to GitHub Pages.
+A writing site built with Hugo, deployed to GitHub Pages.
 
 ## Stack
 
 - [Hugo](https://gohugo.io/) — static site generator
 - [GitHub Pages](https://pages.github.com/) — hosting
 - [GitHub Actions](https://github.com/features/actions) — automated deploy on push
+- Custom layouts and CSS — no theme
 
 ## Dependencies
 
@@ -19,8 +20,6 @@ A commentary built with Hugo, deployed to GitHub Pages.
 $ git clone git@github.com:kzkaed/kzkaed.github.io.git
 
 $ cd kzkaed.github.io
-
-$ git submodule update --init --recursive
 
 $ hugo server
 ```

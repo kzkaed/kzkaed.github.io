@@ -1,7 +1,7 @@
 :root {
   --bg: #f9f9f7;
   --text: #1a1a1a;
-  --secondary: #888;
+  --secondary: #707070;
   --border: #e2e2e0;
   --max-width: 680px;
   --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -11,7 +11,7 @@
 [data-theme="dark"] {
   --bg: #111110;
   --text: #e8e8e6;
-  --secondary: #5a5a58;
+  --secondary: #8a8a8a;
   --border: #242422;
 }
 
