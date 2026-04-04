@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>topology.work — style guide v1</title>
+<title>topology.work — style guide v2</title>
 <style>
   /* ── tokens (exact match to main.min.css) ── */
   :root {
@@ -44,7 +44,7 @@
   nav {
     max-width: var(--max-width);
     margin: 0 auto;
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 1.5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -52,7 +52,7 @@
 
   .wordmark {
     font-family: var(--mono);
-    font-size: .9rem;
+    font-size: .85rem;
     font-weight: 500;
     color: var(--text);
     text-decoration: none;
@@ -87,12 +87,12 @@
 
   footer {
     border-top: 1px solid var(--border);
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 1.5rem;
     text-align: center;
   }
   footer span {
     font-family: var(--mono);
-    font-size: .75rem;
+    font-size: .85rem;
     color: var(--secondary);
   }
 
@@ -103,7 +103,7 @@
     border-bottom: 1px solid var(--border);
   }
   .sg-header h1 {
-    font-size: 1rem;
+    font-size: 1.4rem;
     font-weight: 600;
     letter-spacing: -.02em;
     line-height: 1.25;
@@ -209,7 +209,7 @@
   .type-post-title:hover { opacity: .6; cursor: pointer; }
 
   .type-h1 {
-    font-size: 1rem;
+    font-size: 1.4rem;
     font-weight: 600;
     letter-spacing: -.02em;
     line-height: 1.25;
@@ -234,17 +234,17 @@
     line-height: 1.75;
     color: var(--text);
   }
-  .type-body p + p { margin-top: 1.4rem; }
+  .type-body p + p { margin-top: 1.5rem; }
 
   .type-meta {
-    font-size: .8rem;
+    font-size: .85rem;
     color: var(--secondary);
     font-variant-numeric: tabular-nums;
   }
 
   .type-wordmark {
     font-family: var(--mono);
-    font-size: .9rem;
+    font-size: .85rem;
     font-weight: 500;
     letter-spacing: -.01em;
     color: var(--text);
@@ -252,7 +252,7 @@
 
   .type-footer {
     font-family: var(--mono);
-    font-size: .75rem;
+    font-size: .85rem;
     color: var(--secondary);
   }
 
@@ -270,7 +270,7 @@
     justify-content: space-between;
     align-items: baseline;
     gap: 1rem;
-    padding: .85rem 0;
+    padding: 1rem 0;
     border-bottom: 1px solid var(--border);
     text-decoration: none;
     color: var(--text);
@@ -283,7 +283,7 @@
     transition: opacity .15s;
   }
   .post-entry-date {
-    font-size: .8rem;
+    font-size: .85rem;
     color: var(--secondary);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
@@ -372,7 +372,7 @@
 <main>
 
   <div class="sg-header">
-    <h1>style guide — v1</h1>
+    <h1>style guide — v2</h1>
     <p>Source of truth for topology.work visual language. Derived from <code>main.min.css</code>, April 2026.</p>
   </div>
 
@@ -428,12 +428,12 @@
 
     <div class="specimen">
       <div class="type-wordmark">topology.work</div>
-      <p class="specimen-label">.wordmark — mono, 0.9rem, weight 500, ls −0.01em</p>
+      <p class="specimen-label">.wordmark — mono, 0.85rem, weight 500, ls −0.01em</p>
     </div>
 
     <div class="specimen">
       <div class="type-h1">The conditions beneath the work</div>
-      <p class="specimen-label">.post-header h1 — 1rem, weight 600, ls −0.02em, lh 1.25</p>
+      <p class="specimen-label">.post-header h1 — 1.4rem, weight 600, ls −0.02em, lh 1.25</p>
     </div>
 
     <div class="specimen">
@@ -456,7 +456,7 @@
         <p>Software doesn't fail at the feature level. It fails at the substrate — the decisions made before the code was written, the constraints no one named, the assumptions baked into every pull request.</p>
         <p>The question isn't which framework you chose. It's what the framework made invisible.</p>
       </div>
-      <p class="specimen-label">.post-content — 1rem, lh 1.75 · p + p margin-top 1.4rem</p>
+      <p class="specimen-label">.post-content — 1rem, lh 1.75 · p + p margin-top 1.5rem</p>
     </div>
 
     <div class="specimen">
@@ -476,12 +476,12 @@
 
     <div class="specimen">
       <div class="type-meta">Apr 2026</div>
-      <p class="specimen-label">time — 0.8rem, --secondary, font-variant-numeric: tabular-nums</p>
+      <p class="specimen-label">time — 0.85rem, --secondary, font-variant-numeric: tabular-nums</p>
     </div>
 
     <div class="specimen">
       <div class="type-footer">topology.work</div>
-      <p class="specimen-label">footer span — mono, 0.75rem, --secondary</p>
+      <p class="specimen-label">footer span — mono, 0.85rem, --secondary</p>
     </div>
   </section>
 
@@ -506,7 +506,7 @@
           <time class="post-entry-date">Feb 2026</time>
         </div>
       </div>
-      <p class="specimen-label">.post-list — flex col, gap 0 · .post-entry — space-between, baseline, padding .85rem 0, border-bottom 1px --border · first-child gets border-top</p>
+      <p class="specimen-label">.post-list — flex col, gap 0 · .post-entry — space-between, baseline, padding 1rem 0, border-bottom 1px --border · first-child gets border-top</p>
     </div>
 
     <div class="specimen">
@@ -528,34 +528,29 @@
     <span class="sg-label">04 — spacing</span>
 
     <div class="spacing-row">
-      <span class="spacing-name">.85rem 0</span>
-      <div class="spacing-bar" style="width:calc(.85 * 17px)"></div>
-      <span class="spacing-use">post-entry vertical padding</span>
+      <span class="spacing-name">0.5rem</span>
+      <div class="spacing-bar" style="width:calc(0.5 * 17px)"></div>
+      <span class="spacing-use">h1 margin-bottom</span>
+    </div>
+    <div class="spacing-row">
+      <span class="spacing-name">0.75rem</span>
+      <div class="spacing-bar" style="width:calc(0.75 * 17px)"></div>
+      <span class="spacing-use">h2 margin-bottom</span>
     </div>
     <div class="spacing-row">
       <span class="spacing-name">1rem</span>
       <div class="spacing-bar" style="width:17px"></div>
-      <span class="spacing-use">blockquote padding-left</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-name">1.25rem</span>
-      <div class="spacing-bar" style="width:calc(1.25 * 17px)"></div>
-      <span class="spacing-use">nav/footer vertical · post-header padding-bottom</span>
-    </div>
-    <div class="spacing-row">
-      <span class="spacing-name">1.4rem</span>
-      <div class="spacing-bar" style="width:calc(1.4 * 17px)"></div>
-      <span class="spacing-use">paragraph gap (p + p)</span>
+      <span class="spacing-use">post-entry padding · blockquote padding-left · pre padding</span>
     </div>
     <div class="spacing-row">
       <span class="spacing-name">1.5rem</span>
       <div class="spacing-bar" style="width:calc(1.5 * 17px)"></div>
-      <span class="spacing-use">post-header border margin · code block margin</span>
+      <span class="spacing-use">nav/footer padding · horizontal padding · post-header border · paragraph gap · blockquote/pre margin · h3 top margin · animation margin</span>
     </div>
     <div class="spacing-row">
       <span class="spacing-name">2rem</span>
       <div class="spacing-bar" style="width:34px"></div>
-      <span class="spacing-use">h2 top margin · mobile main padding</span>
+      <span class="spacing-use">h2 top margin · tagline margin · mobile main padding</span>
     </div>
     <div class="spacing-row">
       <span class="spacing-name">2.5rem</span>
@@ -598,17 +593,17 @@
     </div>
 
     <div class="specimen">
-      <div style="background:#111110;border:1px solid #242422;border-radius:4px;padding:1.25rem 1.5rem">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
-          <span style="font-family:var(--mono);font-size:.9rem;font-weight:500;letter-spacing:-.01em;color:#e8e8e6">topology.work</span>
+      <div style="background:#111110;border:1px solid #242422;border-radius:4px;padding:1.5rem 1.5rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+          <span style="font-family:var(--mono);font-size:.85rem;font-weight:500;letter-spacing:-.01em;color:#e8e8e6">topology.work</span>
           <span style="border:1px solid #242422;border-radius:4px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:#8a8a8a;font-size:.8rem">◐</span>
         </div>
-        <div style="border-top:1px solid #242422;border-bottom:1px solid #242422;display:flex;justify-content:space-between;align-items:baseline;padding:.85rem 0;gap:1rem">
+        <div style="border-top:1px solid #242422;border-bottom:1px solid #242422;display:flex;justify-content:space-between;align-items:baseline;padding:1rem 0;gap:1rem">
           <span style="font-size:17px;color:#e8e8e6">New Space</span>
-          <time style="font-size:.8rem;color:#8a8a8a;font-variant-numeric:tabular-nums">Apr 2026</time>
+          <time style="font-size:.85rem;color:#8a8a8a;font-variant-numeric:tabular-nums">Apr 2026</time>
         </div>
-        <div style="margin-top:1.25rem;text-align:center">
-          <span style="font-family:var(--mono);font-size:.75rem;color:#8a8a8a">topology.work</span>
+        <div style="margin-top:1.5rem;text-align:center">
+          <span style="font-family:var(--mono);font-size:.85rem;color:#8a8a8a">topology.work</span>
         </div>
       </div>
       <p class="specimen-label">dark mode preview — hardcoded to show dark regardless of system preference</p>
@@ -628,7 +623,7 @@
 </main>
 
 <footer>
-  <span>topology.work — style guide v1 · Apr 2026</span>
+  <span>topology.work — style guide v2 · Apr 2026</span>
 </footer>
 
 <script>

@@ -6,5 +6,10 @@ enableRobotsTXT = true
 [outputs]
   home = ["HTML", "RSS"]
 
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
 [params]
   description = "The work and the work under the work"

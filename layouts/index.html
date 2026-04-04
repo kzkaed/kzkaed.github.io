@@ -1,4 +1,18 @@
 {{ define "main" }}
+<figure class="topology-animation">
+  <iframe src="/topology-visual.html"
+    title="Interactive topology visualization: a mesh grid that deforms continuously while maintaining its connections"
+    style="width:100%;height:280px;border:none;">
+  </iframe>
+  <noscript>
+    <img src="/images/topology-fallback.svg"
+         alt="Topology mesh visualization showing interconnected points that maintain their relationships through deformation"
+         style="width:100%;height:280px;" />
+  </noscript>
+</figure>
+
+<h1 class="site-tagline">the structures beneath the work</h1>
+
 <section class="post-list">
   {{ range (where .Site.RegularPages "Type" "posts") }}
   <a href="{{ .RelPermalink }}" class="post-entry">
