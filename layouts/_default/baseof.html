@@ -61,6 +61,7 @@
 
       function sendTheme() {
         var theme = document.documentElement.dataset.theme || 'light';
+
         iframe.contentWindow.postMessage({ theme: theme }, '*');
       }
       iframe.addEventListener('load', sendTheme);
