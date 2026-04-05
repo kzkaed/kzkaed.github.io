@@ -1,19 +1,21 @@
 ---
 title: "Speed Doesn't Build What Speed Requires"
-description: "topology.work"
+description: "The story of speed and learning"
 date: 2026-04-02
 draft: false
 ---
 
-Everyone is optimizing for speed. The pitch is everywhere: AI compresses production costs toward zero, collapses timelines, removes friction. And it does. The productivity gains are measurable and immediate. No serious person argues against adoption. I've spun up a handful of local 
+Everyone is optimizing for speed. The pitch is everywhere: AI compresses production costs toward zero, collapses timelines, removes friction. And it does. The productivity gains are measurable and immediate. 
 
-But there's a question underneath the acceleration that most organizations haven't stopped to ask: what happens to the capability that makes speed useful?
+Those are a few ideas in development. It has been amaing to protoype and start using locally these tools.
 
-Speed only works when durable capability is built underneath it. And if you look at learning science — the actual research on how people internalize knowledge and develop judgment — building capability requires the one thing speed eliminates: struggle, over time.
+But there is a question that sits beside the acceleration that many organizations are not asking outloud: what happens to the capability that makes speed useful?
 
-That's the tension at the center of this essay, and at the center of what I think about every day. Not whether organizations should adopt AI. They should. But whether the way we're adopting it is building the organizational capacity to use it well — or quietly eroding it.
+Speed only works when durable capability is built underneath and around it. And if you look at learning science — the actual research on how people internalize knowledge and develop judgment — building capability requires the one thing speed eliminates: struggle, over time. It is called Productive Struggle and it has been the basis of learning always. 
 
-## The Gap Nobody's Named
+That's the tension I keep coming back to. Not whether organizations should adopt AI. They should. But whether the way we're adopting it is building the organizational capacity to use it well — or quietly eroding it.
+
+## Name the Gap
 
 The numbers tell a story that should make every executive pause. McKinsey's 2025 global survey found that 88% of organizations now use AI in at least one business function. 72% use generative AI specifically — more than double the year before. Yet only 6% qualify as high performers generating meaningful bottom-line impact. Nearly two-thirds haven't begun scaling AI across the enterprise. And 51% reported at least one negative consequence from AI use, with 30% citing inaccuracy specifically.[1]
 
@@ -21,7 +23,7 @@ Deloitte's 2026 State of AI report captures the dissonance from a different angl
 
 This is a familiar pattern. It happened with outsourcing. It happened with agile adopted as process theater. A tool that promises efficiency gets adopted at the speed of the business case, while the organizational capacity to use it well develops at the speed of culture change. The value shows up on this quarter's dashboard. The erosion shows up later — as quality degradation, as wrong decisions that looked right, as the slow accumulation of plausibly broken outputs that nobody caught because nobody had the expertise to question them.
 
-The missing variable in the 88%-to-6% gap isn't technology. It isn't budget. It's organizational learning capacity. And most people, when they hear that term, reach for exactly the wrong thing.
+The missing variable in the 88%-to-6% gap isn't technology. It is not budget alone. It's organizational learning capacity. And most people, when they hear that term, reach for exactly the wrong thing.
 
 ## What a Learning Organization Isn't
 
@@ -81,7 +83,7 @@ Harvard Business Review reported in January 2026 that 42% of companies abandoned
 
 The 6% getting value from AI aren't doing different technology. They're doing different organizational work. They're building the capacity to construct shared understanding — and they're protecting the conditions under which their people continue to develop the judgment that makes AI useful rather than dangerous.
 
-## Calibration, Not Caution
+## Calibration Rather than Caution
 
 I want to be clear about what I'm not saying. I'm not saying slow down. I'm not saying be careful. I'm not arguing against speed or AI or automation.
 
