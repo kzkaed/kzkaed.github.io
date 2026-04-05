@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aural Topologies</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  #header {
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #222;
+    z-index: 10;
+  }
+  #header h1 {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #888;
+  }
+  #nav {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .nav-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid #444;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: transparent;
+  }
+  .nav-dot.active {
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.4);
+  }
+  .nav-dot:hover { border-color: #999; }
+  #topology-name {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 2px;
+  }
+  #canvas-wrap {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  #controls {
+    padding: 10px 20px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    border-top: 1px solid #222;
+    font-size: 11px;
+    color: #555;
+  }
+  #play-btn {
+    background: none;
+    border: 1px solid #444;
+    color: #ccc;
+    padding: 6px 18px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+  }
+  #play-btn:hover { border-color: #fff; color: #fff; }
+  #play-btn.playing { border-color: #fff; color: #fff; background: rgba(255,255,255,0.08); }
+  .key-hint { color: #666; }
+</style>
+</head>
+<body>
+<div id="header">
+  <h1>Aural Topologies</h1>
+  <div id="nav"></div>
+  <div id="topology-name"></div>
+</div>
+<div id="canvas-wrap">
+  <canvas id="c"></canvas>
+</div>
+<div id="controls">
+  <button id="play-btn">PLAY</button>
+  <span class="key-hint">SPACE to play/stop &middot; &larr;&rarr; to navigate</span>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const navEl = document.getElementById('nav');
+const nameEl = document.getElementById('topology-name');
+const playBtn = document.getElementById('play-btn');
+
+let W, H, audioCtx, masterGain, isPlaying = false, currentTopology = 0, animFrame;
+let t = 0;
+
+const topologies = [
+  {
+    name: 'Dense Field / Speech Rhythm',
+    desc: 'Noise texture with rhythmic speech-like bursts',
+    draw: drawDenseField,
+    sound: soundDenseField
+  },
+  {
+    name: 'Triangular Decay',
+    desc: 'Amplitude envelope narrowing to silence',
+    draw: drawTriangularDecay,
+    sound: soundTriangularDecay
+  },
+  {
+    name: 'Granular Scatter',
+    desc: 'Pointillist particle dispersion',
+    draw: drawGranularScatter,
+    sound: soundGranularScatter
+  },
+  {
+    name: 'Lattice Decay',
+    desc: 'Cross-hatched structure dissolving',
+    draw: drawLatticeDecay,
+    sound: soundLatticeDecay
+  },
+  {
+    name: 'Pure Decay',
+    desc: 'Clean sinusoidal amplitude decay',
+    draw: drawPureDecay,
+    sound: soundPureDecay
+  },
+  {
+    name: 'Amplitude Pinch',
+    desc: 'Modulation node with zero crossing',
+    draw: drawAmplitudePinch,
+    sound: soundAmplitudePinch
+  },
+  {
+    name: 'Reverse Build',
+    desc: 'Crescendo into dense mass',
+    draw: drawReverseBuild,
+    sound: soundReverseBuild
+  },
+  {
+    name: 'Cross-Fade',
+    desc: 'Two signals crossing through each other',
+    draw: drawCrossFade,
+    sound: soundCrossFade
+  },
+  {
+    name: 'Burst Pattern',
+    desc: 'Rhythmic clusters with spatial decay',
+    draw: drawBurstPattern,
+    sound: soundBurstPattern
+  }
+];
+
+// --- NAV ---
+topologies.forEach((tp, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => selectTopology(i);
+  dot.title = tp.name;
+  navEl.appendChild(dot);
+});
+
+function selectTopology(i) {
+  currentTopology = i;
+  t = 0;
+  nameEl.textContent = topologies[i].name.toUpperCase();
+  document.querySelectorAll('.nav-dot').forEach((d, j) => d.classList.toggle('active', j === i));
+  if (isPlaying) { stopSound(); startSound(); }
+}
+selectTopology(0);
+
+// --- RESIZE ---
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  W = rect.width; H = rect.height;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+window.addEventListener('resize', resize);
+resize();
+
+// --- AUDIO SETUP ---
+function initAudio() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.35;
+  masterGain.connect(audioCtx.destination);
+}
+
+let activeNodes = [];
+function stopSound() {
+  isPlaying = false;
+  playBtn.classList.remove('playing');
+  playBtn.textContent = 'PLAY';
+  activeNodes.forEach(n => { try { n.stop ? n.stop() : (n.disconnect && n.disconnect()); } catch(e){} });
+  activeNodes = [];
+}
+
+function startSound() {
+  initAudio();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  isPlaying = true;
+  playBtn.classList.add('playing');
+  playBtn.textContent = 'STOP';
+  topologies[currentTopology].sound();
+}
+
+function togglePlay() {
+  if (isPlaying) stopSound(); else startSound();
+}
+
+playBtn.onclick = togglePlay;
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') selectTopology((currentTopology + 1) % topologies.length);
+  if (e.code === 'ArrowLeft') selectTopology((currentTopology - 1 + topologies.length) % topologies.length);
+});
+
+// --- DRAW HELPERS ---
+function clear(alpha = 1) {
+  ctx.fillStyle = alpha < 1 ? `rgba(10,10,10,${alpha})` : '#0a0a0a';
+  ctx.fillRect(0, 0, W, H);
+}
+
+function mapRange(v, a, b, c, d) { return c + (v - a) / (b - a) * (d - c); }
+
+// --- TOPOLOGY 1: Dense Field / Speech Rhythm ---
+function drawDenseField() {
+  clear(0.08);
+  const midY = H * 0.35;
+  const midY2 = H * 0.72;
+  const phase = t * 0.02;
+  for (let x = 0; x < W; x += 2) {
+    const envelope = Math.sin(x / W * Math.PI) * (0.6 + 0.4 * Math.sin(phase + x * 0.01));
+    const amp = H * 0.15 * envelope;
+    const n = (Math.random() - 0.5) * 2;
+    const y = midY + n * amp;
+    ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.5})`;
+    ctx.fillRect(x, y, 1.5, 1);
+  }
+  const burstCenters = [0.15, 0.35, 0.55, 0.78];
+  burstCenters.forEach(bc => {
+    const cx = bc * W + Math.sin(t * 0.03 + bc * 10) * 20;
+    for (let i = 0; i < 60; i++) {
+      const bx = cx + (Math.random() - 0.5) * W * 0.08;
+      const by = midY2 + (Math.random() - 0.5) * H * 0.04;
+      ctx.fillStyle = `rgba(255,255,255,${0.4 + Math.random() * 0.4})`;
+      ctx.fillRect(bx, by, 1, Math.random() * 3);
+    }
+  });
+}
+
+function soundDenseField() {
+  const noise = audioCtx.createBufferSource();
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 2, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+  noise.buffer = buf; noise.loop = true;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass'; filter.frequency.value = 800; filter.Q.value = 2;
+  const lfo = audioCtx.createOscillator();
+  const lfoGain = audioCtx.createGain();
+  lfo.frequency.value = 0.8; lfoGain.gain.value = 400;
+  lfo.connect(lfoGain); lfoGain.connect(filter.frequency);
+  noise.connect(filter); filter.connect(masterGain);
+  lfo.start(); noise.start();
+  activeNodes.push(noise, lfo, filter, lfoGain);
+}
+
+// --- TOPOLOGY 2: Triangular Decay ---
+function drawTriangularDecay() {
+  clear(0.06);
+  const progress = (t * 0.003) % 1;
+  const midY = H * 0.4;
+  for (let x = 0; x < W; x += 1) {
+    const xn = x / W;
+    const envWidth = Math.max(0, 1 - xn) * (1 - progress * 0.7);
+    const amp = H * 0.3 * envWidth;
+    if (amp < 1) continue;
+    const density = Math.floor(amp * 0.4);
+    for (let i = 0; i < density; i++) {
+      const dy = (Math.random() - 0.5) * 2 * amp;
+      const alpha = 0.15 + 0.5 * (1 - Math.abs(dy) / amp);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fillRect(x, midY + dy, 1, 1);
+    }
+  }
+}
+
+function soundTriangularDecay() {
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sawtooth'; osc.frequency.value = 220;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 8);
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 3000;
+  filter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 8);
+  osc.connect(filter); filter.connect(gain); gain.connect(masterGain);
+  osc.start(); osc.stop(audioCtx.currentTime + 8);
+  activeNodes.push(osc, gain, filter);
+}
+
+// --- TOPOLOGY 3: Granular Scatter ---
+function drawGranularScatter() {
+  clear(0.04);
+  const midY1 = H * 0.3;
+  const midY2 = H * 0.72;
+  const phase = t * 0.015;
+  for (let i = 0; i < 300; i++) {
+    const age = (phase + i * 0.1) % 6;
+    const x = W * 0.15 + age * W * 0.12 + Math.sin(i * 7.3) * age * 30;
+    const spread = age * H * 0.06;
+    const y = midY1 + Math.sin(i * 3.7 + phase) * spread;
+    const alpha = Math.max(0, 0.6 - age * 0.1);
+    const size = 1 + Math.random() * 1.5;
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.fillRect(x, y, size, size);
+  }
+  const clusters = [0.12, 0.38, 0.62, 0.85];
+  clusters.forEach((cx, ci) => {
+    for (let i = 0; i < 40; i++) {
+      const bx = cx * W + (Math.random() - 0.5) * W * 0.06;
+      const by = midY2 + (Math.random() - 0.5) * H * 0.025;
+      ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.3})`;
+      ctx.fillRect(bx, by, 1, Math.random() * 2);
+    }
+  });
+}
+
+function soundGranularScatter() {
+  function grain() {
+    if (!isPlaying) return;
+    const osc = audioCtx.createOscillator();
+    osc.frequency.value = 200 + Math.random() * 2000;
+    osc.type = ['sine', 'triangle'][Math.floor(Math.random() * 2)];
+    const g = audioCtx.createGain();
+    const dur = 0.02 + Math.random() * 0.08;
+    g.gain.setValueAtTime(0, audioCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0.15, audioCtx.currentTime + dur * 0.3);
+    g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + dur);
+    osc.connect(g); g.connect(masterGain);
+    osc.start(); osc.stop(audioCtx.currentTime + dur);
+    setTimeout(grain, 20 + Math.random() * 80);
+  }
+  grain();
+}
+
+// --- TOPOLOGY 4: Lattice Decay ---
+function drawLatticeDecay() {
+  clear(0.05);
+  const phase = t * 0.01;
+  const midY1 = H * 0.3;
+  const midY2 = H * 0.72;
+  for (let i = 0; i < 80; i++) {
+    const xn = i / 80;
+    const envW = (1 - xn) * (0.5 + 0.5 * Math.sin(phase + xn * 4));
+    const x1 = xn * W;
+    const amp = H * 0.2 * envW;
+    if (amp < 2) continue;
+    ctx.strokeStyle = `rgba(255,255,255,${0.08 + envW * 0.15})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(x1, midY1 - amp);
+    ctx.lineTo(x1 + W * 0.05, midY1 + amp);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x1 + W * 0.05, midY1 - amp);
+    ctx.lineTo(x1, midY1 + amp);
+    ctx.stroke();
+  }
+  for (let i = 0; i < 120; i++) {
+    const x = (phase * 40 + i * 7) % W;
+    const xn = x / W;
+    const spread = (1 - xn) * H * 0.04 + 2;
+    const y = midY2 + (Math.random() - 0.5) * spread;
+    ctx.fillStyle = `rgba(255,255,255,${0.15 + (1 - xn) * 0.3})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+}
+
+function soundLatticeDecay() {
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  osc1.type = 'sawtooth'; osc1.frequency.value = 110;
+  osc2.type = 'sawtooth'; osc2.frequency.value = 113;
+  const gain = audioCtx.createGain();
+  gain.gain.value = 0.2;
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 1500;
+  const lfo = audioCtx.createOscillator();
+  const lfoG = audioCtx.createGain();
+  lfo.frequency.value = 0.3; lfoG.gain.value = 600;
+  lfo.connect(lfoG); lfoG.connect(filter.frequency);
+  osc1.connect(filter); osc2.connect(filter);
+  filter.connect(gain); gain.connect(masterGain);
+  osc1.start(); osc2.start(); lfo.start();
+  activeNodes.push(osc1, osc2, gain, filter, lfo, lfoG);
+}
+
+// --- TOPOLOGY 5: Pure Decay ---
+function drawPureDecay() {
+  clear(0.12);
+  const midY = H * 0.4;
+  const phase = t * 0.04;
+  ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const xn = x / W;
+    const envelope = Math.exp(-xn * 3);
+    const y = midY + Math.sin(phase + x * 0.08) * H * 0.2 * envelope;
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.beginPath(); ctx.moveTo(0, H * 0.7); ctx.lineTo(W, H * 0.7); ctx.stroke();
+}
+
+function soundPureDecay() {
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sine'; osc.frequency.value = 440;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 6);
+  osc.connect(gain); gain.connect(masterGain);
+  osc.start(); osc.stop(audioCtx.currentTime + 6);
+  activeNodes.push(osc, gain);
+}
+
+// --- TOPOLOGY 6: Amplitude Pinch ---
+function drawAmplitudePinch() {
+  clear(0.07);
+  const midY = H * 0.35;
+  const phase = t * 0.025;
+  const pinchX = 0.45 + 0.05 * Math.sin(phase * 0.3);
+  ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const xn = x / W;
+    const dist = Math.abs(xn - pinchX);
+    const pinch = Math.min(1, dist * 4);
+    const amp = H * 0.18 * pinch;
+    const wave = Math.sin(phase + x * 0.06) * amp;
+    const y = midY - Math.abs(wave);
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const xn = x / W;
+    const dist = Math.abs(xn - pinchX);
+    const pinch = Math.min(1, dist * 4);
+    const amp = H * 0.18 * pinch;
+    const wave = Math.sin(phase + x * 0.06) * amp;
+    const y = midY + Math.abs(wave);
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  const midY2 = H * 0.74;
+  const clusters = [0.1, 0.3, 0.52, 0.72, 0.9];
+  clusters.forEach(cx => {
+    for (let i = 0; i < 50; i++) {
+      const bx = cx * W + (Math.random() - 0.5) * W * 0.06;
+      const by = midY2 + (Math.random() - 0.5) * H * 0.03;
+      ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.4})`;
+      ctx.fillRect(bx, by, 1, Math.random() * 2.5);
+    }
+  });
+}
+
+function soundAmplitudePinch() {
+  const osc = audioCtx.createOscillator();
+  osc.type = 'sawtooth'; osc.frequency.value = 180;
+  const ampMod = audioCtx.createOscillator();
+  const ampModGain = audioCtx.createGain();
+  ampMod.frequency.value = 0.15;
+  ampModGain.gain.value = 0.3;
+  const gain = audioCtx.createGain();
+  gain.gain.value = 0.3;
+  ampMod.connect(ampModGain);
+  ampModGain.connect(gain.gain);
+  osc.connect(gain); gain.connect(masterGain);
+  osc.start(); ampMod.start();
+  activeNodes.push(osc, ampMod, gain, ampModGain);
+}
+
+// --- TOPOLOGY 7: Reverse Build ---
+function drawReverseBuild() {
+  clear(0.06);
+  const midY = H * 0.35;
+  const midY2 = H * 0.72;
+  const phase = t * 0.015;
+  const progress = (t * 0.002) % 1;
+  for (let x = 0; x < W; x++) {
+    const xn = x / W;
+    const envelope = Math.pow(xn, 1.5) * (0.7 + 0.3 * Math.sin(progress * Math.PI * 2));
+    const amp = H * 0.2 * envelope;
+    const freq = 0.05 + xn * 0.04;
+    const y = midY + Math.sin(phase + x * freq) * amp;
+    const alpha = 0.2 + envelope * 0.6;
+    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+    ctx.fillRect(x, y, 1.5, 1);
+    if (envelope > 0.4) {
+      for (let j = 0; j < envelope * 3; j++) {
+        const dy = (Math.random() - 0.5) * amp * 1.5;
+        ctx.fillStyle = `rgba(255,255,255,${0.1 + Math.random() * 0.2})`;
+        ctx.fillRect(x, midY + dy, 1, 1);
+      }
+    }
+  }
+  const clusters = [0.3, 0.55, 0.78];
+  clusters.forEach(cx => {
+    for (let i = 0; i < 45; i++) {
+      const bx = cx * W + (Math.random() - 0.5) * W * 0.07;
+      const by = midY2 + (Math.random() - 0.5) * H * 0.035;
+      ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.35})`;
+      ctx.fillRect(bx, by, 1, Math.random() * 2.5);
+    }
+  });
+}
+
+function soundReverseBuild() {
+  const noise = audioCtx.createBufferSource();
+  const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 8, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1);
+  noise.buffer = buf;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.35, audioCtx.currentTime + 7);
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'bandpass'; filter.frequency.value = 200; filter.Q.value = 1;
+  filter.frequency.exponentialRampToValueAtTime(4000, audioCtx.currentTime + 7);
+  noise.connect(filter); filter.connect(gain); gain.connect(masterGain);
+  noise.start(); noise.stop(audioCtx.currentTime + 8);
+  activeNodes.push(noise, gain, filter);
+}
+
+// --- TOPOLOGY 8: Cross-Fade ---
+function drawCrossFade() {
+  clear(0.08);
+  const midY = H * 0.45;
+  ctx.lineWidth = 0.8;
+  for (let x = 0; x < W; x++) {
+    const xn = x / W;
+    const envA = Math.max(0, 1 - xn * 1.2);
+    const ampA = H * 0.25 * envA;
+    const envB = Math.max(0, xn * 1.2 - 0.2);
+    const ampB = H * 0.25 * envB;
+    const steps = Math.max(1, Math.floor((ampA + ampB) * 0.15));
+    for (let i = 0; i < steps; i++) {
+      if (ampA > 1) {
+        const ya = midY + (Math.random() - 0.5) * ampA * 2;
+        ctx.fillStyle = `rgba(255,255,255,${envA * 0.3})`;
+        ctx.fillRect(x, ya, 1, 1);
+      }
+      if (ampB > 1) {
+        const yb = midY + (Math.random() - 0.5) * ampB * 2;
+        ctx.fillStyle = `rgba(255,255,255,${envB * 0.3})`;
+        ctx.fillRect(x, yb, 1, 1);
+      }
+    }
+  }
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.font = '9px Courier New';
+  [-120, -80, -40, 0, 40, 80, 120].forEach(v => {
+    const y = midY - v / 120 * H * 0.25;
+    ctx.fillText(v.toString(), 5, y + 3);
+  });
+}
+
+function soundCrossFade() {
+  const osc1 = audioCtx.createOscillator();
+  const osc2 = audioCtx.createOscillator();
+  osc1.type = 'sine'; osc1.frequency.value = 330;
+  osc2.type = 'triangle'; osc2.frequency.value = 165;
+  const g1 = audioCtx.createGain();
+  const g2 = audioCtx.createGain();
+  g1.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  g1.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 8);
+  g2.gain.setValueAtTime(0.001, audioCtx.currentTime);
+  g2.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 8);
+  osc1.connect(g1); g1.connect(masterGain);
+  osc2.connect(g2); g2.connect(masterGain);
+  osc1.start(); osc2.start();
+  osc1.stop(audioCtx.currentTime + 8); osc2.stop(audioCtx.currentTime + 8);
+  activeNodes.push(osc1, osc2, g1, g2);
+}
+
+// --- TOPOLOGY 9: Burst Pattern ---
+function drawBurstPattern() {
+  clear(0.06);
+  const midY1 = H * 0.3;
+  const midY2 = H * 0.72;
+  const phase = t * 0.03;
+  ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  for (let x = 0; x < W; x++) {
+    const xn = x / W;
+    const baseEnv = Math.exp(-xn * 2);
+    const bumps = 1 + 0.5 * Math.sin(xn * 20 + phase);
+    const amp = H * 0.15 * baseEnv * bumps;
+    const y = midY1 + Math.sin(phase + x * 0.06) * amp;
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  for (let x = 0; x < W; x += 2) {
+    const xn = x / W;
+    const env = Math.exp(-xn * 2);
+    const count = Math.floor(env * 8);
+    for (let i = 0; i < count; i++) {
+      const y = midY1 + (Math.random() - 0.5) * H * 0.3 * env;
+      ctx.fillStyle = `rgba(255,255,255,${0.05 + env * 0.15})`;
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+  [0.18, 0.48, 0.76].forEach(cx => {
+    for (let i = 0; i < 50; i++) {
+      const bx = cx * W + (Math.random() - 0.5) * W * 0.07;
+      const by = midY2 + (Math.random() - 0.5) * H * 0.03;
+      ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.4})`;
+      ctx.fillRect(bx, by, 1, Math.random() * 2.5);
+    }
+  });
+}
+
+function soundBurstPattern() {
+  const osc = audioCtx.createOscillator();
+  osc.type = 'square'; osc.frequency.value = 110;
+  const gain = audioCtx.createGain();
+  gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 6);
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass'; filter.frequency.value = 2000;
+  const trem = audioCtx.createOscillator();
+  const tremG = audioCtx.createGain();
+  trem.frequency.value = 3; tremG.gain.value = 0.15;
+  trem.connect(tremG); tremG.connect(gain.gain);
+  osc.connect(filter); filter.connect(gain); gain.connect(masterGain);
+  osc.start(); trem.start();
+  osc.stop(audioCtx.currentTime + 6); trem.stop(audioCtx.currentTime + 6);
+  activeNodes.push(osc, gain, filter, trem, tremG);
+}
+
+// --- ANIMATION LOOP ---
+function animate() {
+  t++;
+  topologies[currentTopology].draw();
+  animFrame = requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>

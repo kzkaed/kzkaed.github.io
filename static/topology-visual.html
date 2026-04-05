@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body { margin: 0; overflow: hidden; background: transparent; }
+  canvas { display: block; width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<canvas id="topology"></canvas>
+<script>
+(function() {
+  var canvas = document.getElementById('topology');
+  var ctx = canvas.getContext('2d');
+
+  // Colors — must match main.css tokens manually (iframe can't inherit CSS vars)
+  // Light: --border: #e2e2e0, --secondary: #707070
+  // Dark:  --border: #242422, --secondary: #8a8a8a
+  var lineColor = '#e2e2e0';
+  var nodeColor = '#707070';
+
+  // Grid state
+  var points = [];
+  var cols = 0;
+  var rows = 0;
+  var spacing = 50;
+  var amplitude = 18;
+  var time = 0;
+  var animationId = null;
+  var isVisible = true;
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setTheme(theme) {
+    if (theme === 'dark') {
+      lineColor = '#242422';
+      nodeColor = '#8a8a8a';
+    } else {
+      lineColor = '#e2e2e0';
+      nodeColor = '#707070';
+    }
+    if (reducedMotion || !isVisible) draw();
+  }
+
+  function buildGrid() {
+    var w = canvas.width;
+    var h = canvas.height;
+    cols = Math.floor(w / spacing) + 2;
+    rows = Math.floor(h / spacing) + 2;
+    var offsetX = (w - (cols - 1) * spacing) / 2;
+    var offsetY = (h - (rows - 1) * spacing) / 2;
+
+    points = [];
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        points.push({
+          baseX: offsetX + c * spacing,
+          baseY: offsetY + r * spacing,
+          x: 0,
+          y: 0
+        });
+      }
+    }
+    updatePoints();
+  }
+
+  function updatePoints() {
+    for (var i = 0; i < points.length; i++) {
+      var p = points[i];
+      p.x = p.baseX + Math.sin(time * 0.4 + p.baseY * 0.008) * amplitude;
+      p.y = p.baseY + Math.cos(time * 0.3 + p.baseX * 0.006) * amplitude;
+    }
+  }
+
+  function draw() {
+    var w = canvas.width;
+    var h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Draw lines
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 0.7;
+    ctx.beginPath();
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var idx = r * cols + c;
+        var p = points[idx];
+        // Right neighbor
+        if (c < cols - 1) {
+          var right = points[idx + 1];
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(right.x, right.y);
+        }
+        // Down neighbor
+        if (r < rows - 1) {
+          var down = points[idx + cols];
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(down.x, down.y);
+        }
+      }
+    }
+    ctx.stroke();
+
+    // Draw nodes
+    ctx.fillStyle = nodeColor;
+    for (var i = 0; i < points.length; i++) {
+      var pt = points[i];
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function tick() {
+    time += 0.016;
+    updatePoints();
+    draw();
+    animationId = requestAnimationFrame(tick);
+  }
+
+  function start() {
+    if (!animationId && !reducedMotion) {
+      tick();
+    }
+  }
+
+  function stop() {
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+      animationId = null;
+    }
+  }
+
+  function resize() {
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    buildGrid();
+    draw();
+  }
+
+  // Listen for messages from parent
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.theme !== undefined) {
+      setTheme(e.data.theme);
+    }
+    if (e.data && e.data.visible !== undefined) {
+      isVisible = e.data.visible;
+      if (isVisible) start();
+      else stop();
+    }
+  });
+
+  // Pause when tab is hidden
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      stop();
+    } else if (isVisible) {
+      start();
+    }
+  });
+
+  // Handle resize
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(function() { resize(); }).observe(canvas);
+  } else {
+    window.addEventListener('resize', resize);
+  }
+
+  // Init
+  resize();
+  if (reducedMotion) {
+    draw(); // Single static frame
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>
