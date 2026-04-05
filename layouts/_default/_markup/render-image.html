@@ -1,0 +1,19 @@
+{{- $src := .Destination -}}
+{{- $alt := .Text -}}
+{{- $title := .Title -}}
+{{- $img := resources.Get $src -}}
+{{- if $img -}}
+  {{- $resized := $img.Resize "680x" -}}
+  <figure>
+    <img src="{{ $resized.RelPermalink }}"
+         alt="{{ $alt }}"
+         width="{{ $resized.Width }}"
+         height="{{ $resized.Height }}"
+         loading="lazy"
+         {{ with $title }}title="{{ . }}"{{ end }}>
+  </figure>
+{{- else -}}
+  <figure>
+    <img src="{{ $src }}" alt="{{ $alt }}" loading="lazy" {{ with $title }}title="{{ . }}"{{ end }}>
+  </figure>
+{{- end -}}
