@@ -86,7 +86,7 @@
     transition: all 0.2s;
   }
   #play-btn:hover { border-color: #fff; color: #fff; }
-  #play-btn.playing { border-color: #fff; color: #fff; background: rgba(255,255,255,0.08); }
+  #play-btn.playing { border-color: #fff; color: #fff; background: #1a1a1a; }
   .key-hint { color: #999; }
 </style>
 </head>
@@ -214,7 +214,10 @@ function stopSound() {
   isPlaying = false;
   playBtn.classList.remove('playing');
   playBtn.textContent = 'PLAY';
-  activeNodes.forEach(n => { try { n.stop ? n.stop() : (n.disconnect && n.disconnect()); } catch(e){} });
+  activeNodes.forEach(n => {
+    try { n.stop ? n.stop() : (n.disconnect && n.disconnect()); }
+    catch(e) { /* Expected if node is already stopped */ }
+  });
   activeNodes = [];
 }
 
