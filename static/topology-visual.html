@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title></title>
+<title>Topology Visual</title>
 <style>
   body { margin: 0; overflow: hidden; background: transparent; }
   canvas { display: block; width: 100%; height: 100%; }
@@ -106,9 +106,9 @@
     // Draw nodes
     ctx.fillStyle = nodeColor;
     for (var i = 0; i < points.length; i++) {
-      var p = points[i];
+      var pt = points[i];
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 1.2, 0, Math.PI * 2);
+      ctx.arc(pt.x, pt.y, 1.2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
