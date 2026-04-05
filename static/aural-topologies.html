@@ -191,13 +191,13 @@ selectTopology(0);
 
 // --- RESIZE ---
 function resize() {
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = globalThis.devicePixelRatio || 1;
   const rect = canvas.parentElement.getBoundingClientRect();
   W = rect.width; H = rect.height;
   canvas.width = W * dpr; canvas.height = H * dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
-window.addEventListener('resize', resize);
+globalThis.addEventListener('resize', resize);
 resize();
 
 // --- AUDIO SETUP ---
